@@ -1,20 +1,24 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import type { Product } from "../product";
 
 export const useProducts = () => {
-  const [products, setProducts] = useState<any[]>([]);
+  const { data } = useFetchProducts();
+  return { products: data };
+};
 
-  const fetchProducts = async () => {
-    const response = await axios.get(
-      "https://fakestoreapi.com/products"
-    );
+const useFetchProducts = () => {
+  const [products, setProducts] = useState<Product[]>([]);
 
-    if (response && response.data) setProducts(response.data);
+  const fetchProducts = () => {
+    axios
+      .get("https://fakestoreapi.com/products")
+      .then((response) => {
+        if (response && response.data) setProducts(response.data);
+      });
   };
 
-  useEffect(() => {
-    fetchProducts();
-  }, []);
+  useEffect(fetchProducts, []);
 
-  return { products };
+  return { data: products };
 };
